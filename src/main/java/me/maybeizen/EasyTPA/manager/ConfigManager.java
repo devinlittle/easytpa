@@ -15,7 +15,6 @@ public class ConfigManager {
     private final EasyTPA plugin;
     private FileConfiguration config;
     private FileConfiguration messages;
-    private File configFile;
     private File messagesFile;
 
     public ConfigManager(EasyTPA plugin) {
@@ -23,7 +22,7 @@ public class ConfigManager {
     }
 
     public void loadConfigs() {
-        configFile = new File(plugin.getDataFolder(), "config.yml");
+        File configFile = new File(plugin.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             plugin.saveDefaultConfig();
         }
@@ -55,18 +54,6 @@ public class ConfigManager {
         plugin.reloadConfig();
         config = plugin.getConfig();
         messages = YamlConfiguration.loadConfiguration(messagesFile);
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    public FileConfiguration getMessages() {
-        return messages;
-    }
-
-    public int getRequestTimeout() {
-        return config.getInt("settings.request-timeout", 60);
     }
 
     public int getCooldown() {

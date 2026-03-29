@@ -7,13 +7,11 @@ import me.maybeizen.EasyTPA.manager.DatabaseManager;
 import me.maybeizen.EasyTPA.manager.TeleportRequestManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import me.maybeizen.EasyTPA.util.Metrics;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 
 public class EasyTPA extends JavaPlugin {
     private static EasyTPA instance;
@@ -21,11 +19,10 @@ public class EasyTPA extends JavaPlugin {
     private ConfigManager configManager;
     private DatabaseManager databaseManager;
     private TeleportRequestManager teleportManager;
-    private CommandManager commandManager;
+    private final CommandManager commandManager = new CommandManager(this);
     private PlaceholderAPIIntegration placeholderIntegration;
     
     private ExecutorService executorService;
-    private BukkitTask cleanupTask;
 
     @Override
     public void onEnable() {
@@ -45,8 +42,7 @@ public class EasyTPA extends JavaPlugin {
         databaseManager.initialize();
         
         teleportManager = new TeleportRequestManager(this, databaseManager);
-        
-        commandManager = new CommandManager(this);
+
         commandManager.registerCommands();
         
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -60,17 +56,11 @@ public class EasyTPA extends JavaPlugin {
             getLogger().info("PlaceholderAPI not found, skipping integration");
         }
         
-        startCleanupTask();
-        
         getLogger().info("EasyTPA v" + getDescription().getVersion() + " has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        if (cleanupTask != null) {
-            cleanupTask.cancel();
-        }
-        
         if (teleportManager != null) {
             for (java.util.UUID playerId : teleportManager.getPendingTeleports()) {
                 teleportManager.cancelTeleport(playerId);
@@ -87,16 +77,6 @@ public class EasyTPA extends JavaPlugin {
         
         getLogger().info("EasyTPA has been disabled!");
         instance = null;
-    }
-
-    private void startCleanupTask() {
-        cleanupTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-            try {
-                teleportManager.cleanupExpiredRequests();
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING, "Error during cleanup task", e);
-            }
-        }, 1200L, 1200L); // 1 minute (1200 ticks)
     }
 
     public static EasyTPA getInstance() {

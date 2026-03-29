@@ -60,9 +60,5 @@ public class MessageUtil {
 
         sendMessage(player, message);
     }
-
-    public static String toLegacyString(Component component) {
-        return LEGACY_SERIALIZER.serialize(component);
-    }
 }
 

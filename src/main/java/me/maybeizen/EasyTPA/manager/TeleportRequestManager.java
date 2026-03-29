@@ -92,7 +92,7 @@ public class TeleportRequestManager {
             }
             
             Location teleportDestination;
-            if (captureLocation && capturedDestination != null) {
+            if (captureLocation) {
                 if (capturedDestination.getWorld() != null && Bukkit.getWorld(capturedDestination.getWorld().getUID()) != null) {
                     teleportDestination = capturedDestination;
                 } else {
@@ -242,14 +242,6 @@ public class TeleportRequestManager {
         return cooldowns.getOrDefault(playerId, 0L);
     }
 
-    public void cleanupExpiredRequests() {
-        List<UUID> toRemove = new ArrayList<>();
-        
-        for (UUID requesterId : toRemove) {
-            activeRequests.remove(requesterId);
-        }
-    }
-
     public static class PendingTeleport {
         private final Player player;
         private final Location destination;
@@ -330,10 +322,6 @@ public class TeleportRequestManager {
 
         public void setTask(BukkitTask task) {
             this.task = task;
-        }
-
-        public int getRemainingSeconds() {
-            return remainingSeconds;
         }
     }
 
