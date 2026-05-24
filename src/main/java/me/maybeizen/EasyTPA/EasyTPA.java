@@ -15,36 +15,38 @@ import java.util.concurrent.Executors;
 
 public class EasyTPA extends JavaPlugin {
     private static EasyTPA instance;
-    
+ 
     private ConfigManager configManager;
     private DatabaseManager databaseManager;
     private TeleportRequestManager teleportManager;
-    private final CommandManager commandManager = new CommandManager(this);
+    private CommandManager commandManager;
     private PlaceholderAPIIntegration placeholderIntegration;
-    
+ 
     private ExecutorService executorService;
 
-    @Override
+
+  @Override
     public void onEnable() {
         instance = this;
 
         int pluginId = 28655;
         Metrics metrics = new Metrics(this, pluginId);
-        
+
         executorService = Executors.newCachedThreadPool();
-        
+
         saveDefaultConfig();
-        
+
         configManager = new ConfigManager(this);
         configManager.loadConfigs();
-        
+
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
-        
+
         teleportManager = new TeleportRequestManager(this, databaseManager);
 
+        commandManager = new CommandManager(this);
         commandManager.registerCommands();
-        
+
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             placeholderIntegration = new PlaceholderAPIIntegration(this);
             if (placeholderIntegration.register()) {
@@ -55,7 +57,7 @@ public class EasyTPA extends JavaPlugin {
         } else {
             getLogger().info("PlaceholderAPI not found, skipping integration");
         }
-        
+
         getLogger().info("EasyTPA v" + getDescription().getVersion() + " has been enabled!");
     }
 
@@ -66,15 +68,15 @@ public class EasyTPA extends JavaPlugin {
                 teleportManager.cancelTeleport(playerId);
             }
         }
-        
+ 
         if (databaseManager != null) {
             databaseManager.close();
         }
-        
+ 
         if (executorService != null) {
             executorService.shutdown();
         }
-        
+
         getLogger().info("EasyTPA has been disabled!");
         instance = null;
     }

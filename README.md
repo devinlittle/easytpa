@@ -17,7 +17,7 @@
 - **Performance** - Async database operations and optimized code
 - **Flexible** - Permission-based access with bypass options
 - **Reliable** - Request timeout, cooldown, and safety systems
-- **Multi-version** - Support for Minecraft 1.21.4+
+- **Multi-version** - Support for Minecraft 26.1.2+
 
 ## Commands
 
